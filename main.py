@@ -36,20 +36,20 @@ AverageViewersEN = """CREATE TABLE avg_viewers_en(
                     ID INT(20) PRIMARY KEY AUTO_INCREMENT,
                     STREAMER_EN_ID INT(20),
                     FOREIGN KEY (STREAMER_EN_ID) REFERENCES streamer_en(ID_en),
-                    UNIQUE(STREAMER_EN_ID),
                     AVG_VIEWERS INT (20) NOT NULL,
                     AVG_FROM DATETIME(0),
-                    AVG_TO DATETIME(0)
+                    AVG_TO DATETIME(0),
+                    UNIQUE (STREAMER_EN_ID)
                     )"""
 
 AverageViewersPL = """CREATE TABLE avg_viewers_pl(
                     ID INT(20) PRIMARY KEY AUTO_INCREMENT,
                     STREAMER_PL_ID INT(20),
                     FOREIGN KEY (STREAMER_PL_ID) REFERENCES streamer_pl(ID_pl),
-                    UNIQUE(STREAMER_PL_ID),
                     AVG_VIEWERS INT (20) NOT NULL,
                     AVG_FROM DATETIME(0),
-                    AVG_TO DATETIME(0)
+                    AVG_TO DATETIME(0),
+                    UNIQUE (STREAMER_PL_ID)
                     )"""
 
 WeatherEN = """CREATE TABLE weather_en(
