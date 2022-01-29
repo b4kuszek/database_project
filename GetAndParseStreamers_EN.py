@@ -33,7 +33,7 @@ class MyThread(Thread):
 URL = 'https://api.twitch.tv/helix/streams'
 
 headers = {
-    'Authorization': 'Bearer 9n6j9z9e1zx3g1jc8ajdguya24y88s',
+    'Authorization': 'Bearer xnzpq6d45ptdy4ul5egcr2mmy9wk21',
     'Client-Id': 'v8dly98x0oe9wdmyvgqo3el4s5g12p',
 }
 

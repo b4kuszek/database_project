@@ -113,13 +113,13 @@ avgViewersPL = []
 # Retrieve average from
 if len(data_EN['streamers'][0]) != 0:
     avg_from = average_viewers_EN['TimeStarted']
-    avg_from_formatted = datetime.datetime(int(avg_from[6:10]), int(avg_from[3:5]), int(avg_from[0:2]),
+    avg_from_formatted_EN = datetime.datetime(int(avg_from[6:10]), int(avg_from[3:5]), int(avg_from[0:2]),
                                            int(avg_from[11:13]), int(avg_from[14:16]), int(avg_from[17:19]))
 
 # Retrieve average to
 if len(data_EN['streamers'][0]) != 0:
     avg_to = average_viewers_EN['TimeFinished']
-    avg_to_formatted = datetime.datetime(int(avg_to[6:10]), int(avg_to[3:5]), int(avg_to[0:2]),
+    avg_to_formatted_EN = datetime.datetime(int(avg_to[6:10]), int(avg_to[3:5]), int(avg_to[0:2]),
                                          int(avg_to[11:13]), int(avg_to[14:16]), int(avg_to[17:19]))
 
 ###########################################################################################################
@@ -128,13 +128,13 @@ if len(data_EN['streamers'][0]) != 0:
 # Retrieve average from
 if len(data_PL['streamers'][0]) != 0:
     avg_from = average_viewers_PL['TimeStarted']
-    avg_from_formatted = datetime.datetime(int(avg_from[6:10]), int(avg_from[3:5]), int(avg_from[0:2]),
+    avg_from_formatted_PL = datetime.datetime(int(avg_from[6:10]), int(avg_from[3:5]), int(avg_from[0:2]),
                                            int(avg_from[11:13]), int(avg_from[14:16]), int(avg_from[17:19]))
 
 # Retrieve average to
 if len(data_PL['streamers'][0]) != 0:
     avg_to = average_viewers_PL['TimeFinished']
-    avg_to_formatted = datetime.datetime(int(avg_to[6:10]), int(avg_to[3:5]), int(avg_to[0:2]),
+    avg_to_formatted_PL = datetime.datetime(int(avg_to[6:10]), int(avg_to[3:5]), int(avg_to[0:2]),
                                          int(avg_to[11:13]), int(avg_to[14:16]), int(avg_to[17:19]))
 
 ###########################################################################################################
@@ -148,7 +148,7 @@ for streamer in streamers_names_formatted_EN:
     id = cursor.fetchall()
 
     # Retrieve average viewers
-    avg_viewers = data_EN[streamer]
+    avg_viewers = average_viewers_EN[streamer]
 
     # Checking if streamer exists in the table
     check_if_exists = "SELECT EXISTS(SELECT * FROM avg_viewers_en where streamer_en_id = '" + str(id[0][0]) + "')"
@@ -160,18 +160,20 @@ for streamer in streamers_names_formatted_EN:
     cursor.execute(check_if_avg_from_changed)
     old_avg_from = cursor.fetchall()
 
-    if old_avg_from[0][3] != data_EN['TimeStarted']:
-        update = f"""UPDATE avg_viewers_en
-                    SET AVG_VIEWERS = '{data_EN[streamer]}', AVG_FROM = '{data_EN['TimeStarted']}', AVG_TO = '{data_EN['TimeFinished']}'
-                    WHERE streamer_en_id = '{id}';"""
-        cursor.execute(update)
+    if len(old_avg_from) != 0:
+        if old_avg_from[0][3] != avg_from_formatted_EN:
+            update = f"""UPDATE avg_viewers_en
+                        SET AVG_VIEWERS = '{average_viewers_EN[streamer]}', 
+                        AVG_FROM = '{avg_from_formatted_EN}', AVG_TO = '{avg_to_formatted_EN}'
+                        WHERE streamer_en_id = '{id[0][0]}';"""
+            cursor.execute(update)
 
-        print("Weszlo")
+            print("Weszlo")
 
     # Create table consisting of tuples, which will be added to the database.
     # If the streamer exists in the table he will not be added.
     if boolean[0][0] == 0:
-        avgViewersEN.append((id[0][0], avg_viewers, avg_from_formatted, avg_to_formatted))
+        avgViewersEN.append((id[0][0], avg_viewers, avg_from_formatted_EN, avg_to_formatted_EN))
 
 ###########################################################################################################
 
@@ -191,10 +193,25 @@ for streamer in streamers_names_formatted_PL:
     cursor.execute(check_if_exists)
     boolean = cursor.fetchall()
 
+    # Checking if the avg_from changed
+    check_if_avg_from_changed = "SELECT * FROM avg_viewers_pl where streamer_pl_id = '" + str(id[0][0]) + "'"
+    cursor.execute(check_if_avg_from_changed)
+    old_avg_from = cursor.fetchall()
+
+    if len(old_avg_from) != 0:
+        if old_avg_from[0][3] != avg_from_formatted_PL:
+            update = f"""UPDATE avg_viewers_pl
+                            SET AVG_VIEWERS = '{average_viewers_PL[streamer]}', 
+                            AVG_FROM = '{avg_from_formatted_PL}', AVG_TO = '{avg_to_formatted_PL}'
+                            WHERE streamer_pl_id = '{id[0][0]}';"""
+            cursor.execute(update)
+
+            print("Weszlo")
+
     # Create table consisting of tuples, which will be added to the database
     # If the streamer exists in the table he will not be added.
     if boolean[0][0] == 0:
-        avgViewersPL.append((id[0][0], avg_viewers, avg_from_formatted, avg_to_formatted))
+        avgViewersPL.append((id[0][0], avg_viewers, avg_from_formatted_PL, avg_to_formatted_PL))
 
 # Queries
 addAvgViewersEN = 'INSERT INTO avg_viewers_en (STREAMER_EN_ID, AVG_VIEWERS, AVG_FROM, AVG_TO) VALUES (%s, %s, %s, %s)'

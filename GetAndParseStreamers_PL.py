@@ -34,12 +34,12 @@ class MyThread(Thread):
 URL = 'https://api.twitch.tv/helix/streams'
 
 headers = {
-    'Authorization': 'Bearer 9n6j9z9e1zx3g1jc8ajdguya24y88s',
+    'Authorization': 'Bearer xnzpq6d45ptdy4ul5egcr2mmy9wk21',
     'Client-Id': 'v8dly98x0oe9wdmyvgqo3el4s5g12p',
 }
 
 params = (
-    ('user_login', ['xayoo_', 'ewroon', 'popo', 'lukisteve', 'vysotzky', 'japczan', 'izakooo', 'holak1337', 'polsatgame', 'xth0rek']),
+    ('user_login', ['overpow', 'ewroon', 'popo', 'nervarien', 'vysotzky', 'pago3', 'izakooo', 'RybsonLoL_', 'polsatgames', 'xth0rek']),
 )
 
 # Creating a dictionary which will contain streamer names and their viewer counts over time

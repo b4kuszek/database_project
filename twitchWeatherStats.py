@@ -10,9 +10,12 @@ cursor_TWS = connection_TWS.cursor()
 
 ####################################################################
 # Streamers tables
-streamers = ['overpow', 'ewroon', 'popo', 'nervarien', 'vysotzky', 'pago3', 'izakooo', 'rybsonlol_',
-             'polsatgames', 'xth0rek', 'xqcow', 'trainwreckstv', 'lirik', 'loltyler1', 'sodapoppin',
-             'shroud', 'pokimane', 'fextralife', 'summit1g', 'forsen']
+streamers = ['overpow', 'ewroon', 'popo', 'nervarien', 'vysotzky', 'pago3', 'izakooo', 'rybsonlol_', 'polsatgames',
+             'xqcow', 'trainwreckstv', 'lirik', 'loltyler1', 'sodapoppin', 'shroud', 'pokimane', 'fextralife',
+             'summit1g', 'forsen']
+
+streamers_PL = ['overpow', 'ewroon', 'popo', 'nervarien', 'vysotzky', 'pago3', 'izakooo', 'rybsonlol_', 'polsatgames']
+streamers_EN = ['xqcow', 'trainwreckstv', 'lirik', 'loltyler1', 'sodapoppin', 'shroud', 'pokimane', 'fextralife', 'summit1g', 'forsen']
 
 ####################################################################
 # Add streamers
@@ -34,9 +37,8 @@ for streamer in streamers:
                             )""")
 
 ####################################################################
-# Gathering queries
-
-for streamer in streamers:
+# Queries PL
+for streamer in streamers_PL:
 
     big_query = f"""SELECT avg_viewers_pl.AVG_FROM, avg_viewers_pl.AVG_TO, games.TITLE, avg_viewers_pl.AVG_VIEWERS, 
                     weather_pl.CITY, weather_pl.GENERAL_INFO, weather_pl.TEMP FROM streamer_pl 
@@ -44,6 +46,34 @@ for streamer in streamers:
                     INNER JOIN avg_viewers_pl ON avg_viewers_pl.STREAMER_PL_ID = streamer_pl.ID_pl 
                     INNER JOIN weather_pl ON weather_pl.AVG_VIEWERS_PL_ID = avg_viewers_pl.ID 
                     WHERE streamer_pl.NAME = "{streamer}";"""
+
+    cursor_TW.execute(big_query)
+    streamer_stats = cursor_TW.fetchall()
+
+    # Checking if data exists in the table
+    if len(streamer_stats) != 0:
+        check_if_exists = f"SELECT EXISTS(SELECT * FROM {streamer} where avg_from = '" + str(streamer_stats[0][0]) + "')"
+        cursor_TWS.execute(check_if_exists)
+        boolean_streamer = cursor_TWS.fetchall()
+
+    # Inserting queries
+    addStreamerStats = f"""INSERT INTO {streamer} (AVG_FROM, AVG_TO, TITLE, AVERAGE_VIEWERS, CITY, WEATHER_INFO, TEMPERATURE)
+                      VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+
+    # Inserting data
+    if len(streamer_stats) != 0:
+        if boolean_streamer[0][0] == 0:
+            cursor_TWS.executemany(addStreamerStats, streamer_stats)
+
+# Queries EN
+for streamer in streamers_EN:
+
+    big_query = f"""SELECT avg_viewers_en.AVG_FROM, avg_viewers_en.AVG_TO, games.TITLE, avg_viewers_en.AVG_VIEWERS, 
+                    weather_en.CITY, weather_en.GENERAL_INFO, weather_en.TEMP FROM streamer_en 
+                    INNER JOIN games ON games.ID = streamer_en.GAME_ID 
+                    INNER JOIN avg_viewers_en ON avg_viewers_en.STREAMER_EN_ID = streamer_en.ID_en 
+                    INNER JOIN weather_en ON weather_en.AVG_VIEWERS_EN_ID = avg_viewers_en.ID 
+                    WHERE streamer_en.NAME = "{streamer}";"""
 
     cursor_TW.execute(big_query)
     streamer_stats = cursor_TW.fetchall()
